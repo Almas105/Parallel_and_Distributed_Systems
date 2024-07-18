@@ -1,0 +1,25 @@
+#include <stdio.h>
+#include <cuda.h>
+__global__ void add(int *a,int *b,int *c)
+{
+*c=*a + *b;
+printf("Addition of two numbers by %d is %d",threadIdx.x,*c);
+}
+
+int main(){
+int ha=5,hb=10,hc;
+int *da,*db,*dc;
+cudaMalloc((void**)&da,sizeof(int));
+cudaMalloc((void**)&db,sizeof(int));
+cudaMalloc((void**)&dc,sizeof(int));
+
+cudaMemcpy(da,&ha,sizeof(int),cudaMemcpyHostToDevice);
+cudaMemcpy(db,&hb,sizeof(int),cudaMemcpyHostToDevice);
+add<<<1,1>>>(da,db,dc);
+cudaMemcpy(&hc,dc,sizeof(int),cudaMemcpyDeviceToHost);
+cudaDeviceSynchronize();
+cudaFree(da);
+cudaFree(db);
+cudaFree(dc);
+}
+
